@@ -104,7 +104,7 @@ router.post('/', authenticateJWT, async (req: AuthRequest, res: Response) => {
 // POST /api/contracts/:uuid/photo - Upload selfie
 router.post('/:uuid/photo', authenticateJWT, upload.single('photo'), async (req: AuthRequest, res: Response) => {
   try {
-    const { uuid } = req.params;
+    const uuid = req.params.uuid as string;
     const { role } = req.body;
     
     if (!req.file || !role) {
