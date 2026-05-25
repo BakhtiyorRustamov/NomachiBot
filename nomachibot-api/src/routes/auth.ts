@@ -6,12 +6,17 @@ import { PrismaClient } from '@prisma/client';
 const router = express.Router();
 const prisma = new PrismaClient();
 
-const BOT_TOKEN = process.env.BOT_TOKEN;
-const JWT_SECRET = process.env.JWT_SECRET;
-
-if (!BOT_TOKEN || !JWT_SECRET) {
-  throw new Error("Missing BOT_TOKEN or JWT_SECRET in environment variables");
-}
+// Validated at request time, not module load time
+const getBotToken = () => {
+  const token = process.env.BOT_TOKEN;
+  if (!token) throw new Error("Missing BOT_TOKEN");
+  return token;
+};
+const getJwtSecret = () => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) throw new Error("Missing JWT_SECRET");
+  return secret;
+};
 
 router.post('/telegram', async (req: Request, res: Response) => {
   const { initData } = req.body;
@@ -31,7 +36,7 @@ router.post('/telegram', async (req: Request, res: Response) => {
   const dataCheckString = keys.map(key => `${key}=${urlParams.get(key)}`).join('\n');
 
   // 3. Generate Secret Key
-  const secretKey = crypto.createHmac('sha256', 'WebAppData').update(BOT_TOKEN).digest();
+  const secretKey = crypto.createHmac('sha256', 'WebAppData').update(getBotToken()).digest();
 
   // 4. Generate Hash and Compare
   const calculatedHash = crypto.createHmac('sha256', secretKey).update(dataCheckString).digest('hex');
@@ -78,7 +83,7 @@ router.post('/telegram', async (req: Request, res: Response) => {
     // 7. Generate JWT
     const token = jwt.sign(
       { id: user.id, telegram_id: tgUser.id.toString(), username: tgUser.username },
-      JWT_SECRET,
+      getJwtSecret(),
       { expiresIn: '24h' }
     );
 
