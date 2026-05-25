@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id          String   @id @default(uuid()) @db.Uuid
+  telegram_id BigInt   @unique
+  first_name  String?
+  last_name   String?
+  username    String?
+  created_at  DateTime @default(now()) @db.Timestamptz()
+
+  // Relations
+  contracts_as_borrower Contract[]     @relation("BorrowerContracts")
+  confirmed_participants Participant[] @relation("ConfirmedByUser")
+  logged_payments       Payment[]      @relation("LoggedByUser")
+  notifications         Notification[]
+
+  @@map("users")
+}
+
+model Contract {
+  uuid             String    @id @default(uuid()) @db.Uuid
+  borrower_user_id String    @db.Uuid
+  total_amount     Decimal   @db.Decimal(15, 2)
+  currency         String
+  monthly_amount   Decimal   @db.Decimal(15, 2)
+  n_months         Int
+  start_date       DateTime  @db.Date
+  description      String?
+  language         String
+  status           String
+  pdf_path         String?
+  created_at       DateTime  @default(now()) @db.Timestamptz()
+  activated_at     DateTime? @db.Timestamptz()
+
+  // Relations
+  borrower      User           @relation("BorrowerContracts", fields: [borrower_user_id], references: [id])
+  participants  Participant[]
+  payments      Payment[]
+  notifications Notification[]
+
+  @@map("contracts")
+}
+
+model Participant {
+  id                   String    @id @default(uuid()) @db.Uuid
+  contract_uuid        String    @db.Uuid
+  role                 String
+  invite_token         String?   @unique
+  first_name           String
+  last_name            String
+  patronymic           String?
+  telegram_username    String?
+  phone                String?
+  address              String?
+  photo_path           String?
+  confirmed_at         DateTime? @db.Timestamptz()
+  confirmed_by_user_id String?   @db.Uuid
+
+  // Relations
+  contract          Contract @relation(fields: [contract_uuid], references: [uuid])
+  confirmed_by_user User?    @relation("ConfirmedByUser", fields: [confirmed_by_user_id], references: [id])
+
+  @@map("participants")
+}
+
+model Payment {
+  id                String   @id @default(uuid()) @db.Uuid
+  contract_uuid     String   @db.Uuid
+  logged_by_user_id String   @db.Uuid
+  amount            Decimal  @db.Decimal(15, 2)
+  payment_date      DateTime @db.Date
+  note              String?
+  logged_at         DateTime @default(now()) @db.Timestamptz()
+  running_balance   Decimal  @db.Decimal(15, 2)
+
+  // Relations
+  contract       Contract @relation(fields: [contract_uuid], references: [uuid])
+  logged_by_user User     @relation("LoggedByUser", fields: [logged_by_user_id], references: [id])
+
+  @@map("payments")
+}
+
+model Notification {
+  id            String   @id @default(uuid()) @db.Uuid
+  user_id       String   @db.Uuid
+  contract_uuid String   @db.Uuid
+  type          String
+  sent_at       DateTime @default(now()) @db.Timestamptz()
+
+  // Relations
+  user     User     @relation(fields: [user_id], references: [id])
+  contract Contract @relation(fields: [contract_uuid], references: [uuid])
+
+  @@map("notifications")
+}
