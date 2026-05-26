@@ -87,7 +87,7 @@ const AppContent = () => {
         try {
           const params = retrieveLaunchParams();
           initData = params.initData;
-          initDataRaw = params.initDataRaw;
+          initDataRaw = params.initDataRaw as string | undefined;
         } catch (e) {
           console.log('Not in Telegram environment');
         }
