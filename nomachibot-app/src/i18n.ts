@@ -32,7 +32,6 @@ const resources = {
       "dashboardTitle": "Welcome to NomachiBot",
       "dashboardSubtitle": "Create, countersign, and publicly track zero-interest P2P debt agreements entirely inside Telegram.",
       "dashboardHint": "Tap the button above to create your first debt agreement. You'll be able to invite the lender and witnesses via Telegram.",
-      // ── Phase 4: Confirmation flow ──
       "loading": "Loading...",
       "back": "Back",
       "invalidLink": "Invalid Invite Link",
@@ -53,7 +52,7 @@ const resources = {
       "yourDetails": "Your Details",
       "confirmDetailsHint": "Review and update your information below before confirming.",
       "legalDisclaimer": "This document is a formal record of mutual intent. It does not constitute a notarized legal instrument. Consult a qualified lawyer for legal enforcement.",
-      "confirming": "Confirming…",
+      "confirming": "Confirming...",
       "confirmAndSign": "Confirm & Sign",
       "confirmAsWitness": "I Confirm as Witness",
       "confirmSuccess": "Confirmed!",
@@ -94,7 +93,6 @@ const resources = {
       "dashboardTitle": "NomachiBot ga xush kelibsiz",
       "dashboardSubtitle": "Telegram ichida foizsiz P2P qarz shartnomalarini yarating, tasdiqlang va ochiq kuzating.",
       "dashboardHint": "Birinchi qarz shartnomangizni yaratish uchun yuqoridagi tugmani bosing. Siz qarz beruvchi va guvohlarni Telegram orqali taklif qila olasiz.",
-      // ── Phase 4: Confirmation flow ──
       "loading": "Yuklanmoqda...",
       "back": "Orqaga",
       "invalidLink": "Yaroqsiz taklif havolasi",
@@ -113,4 +111,91 @@ const resources = {
       "confirmed": "Tasdiqlangan",
       "pending": "Kutilmoqda",
       "yourDetails": "Sizning ma'lumotlaringiz",
-      "confirmDetailsHint": "Tasdiqlashdan oldin quyidagi ma'lumotlaringizni
+      "confirmDetailsHint": "Tasdiqlashdan oldin quyidagi ma'lumotlaringizni tekshiring va yangilang.",
+      "legalDisclaimer": "Bu hujjat tomonlarning o'zaro niyatining rasmiy qaydnomasidir. U notarial hujjat hisoblanmaydi. Yuridik ijro uchun malakali yuristga murojaat qiling.",
+      "confirming": "Tasdiqlanmoqda...",
+      "confirmAndSign": "Tasdiqlash va imzolash",
+      "confirmAsWitness": "Guvoh sifatida tasdiqlayman",
+      "confirmSuccess": "Tasdiqlandi!",
+      "confirmSuccessHint": "Sizning ishtirokingiz shartnomada qayd etildi.",
+      "contractId": "Shartnoma ID",
+      "viewPublicPage": "Ommaviy holat sahifasini ko'rish",
+      "confirmMandatoryFields": "Ism va familiya majburiy.",
+      "confirmError": "Tasdiqlab bo'lmadi. Iltimos, qayta urinib ko'ring."
+    }
+  },
+  ru: {
+    translation: {
+      "photoWarning": "Внимание: Это фото будет видно всем, кто отсканирует QR-код.",
+      "takeSelfie": "Сделать селфи",
+      "retakePhoto": "Удалить / Переснять",
+      "createContract": "Создать договор",
+      "myDetails": "Мои данные (Заемщик)",
+      "lenderDetails": "Данные кредитора",
+      "witnesses": "Свидетели (Необязательно)",
+      "debtTerms": "Условия долга",
+      "firstName": "Имя",
+      "lastName": "Фамилия",
+      "patronymic": "Отчество",
+      "phone": "Номер телефона",
+      "address": "Адрес",
+      "username": "Имя пользователя Telegram",
+      "addWitness": "Добавить свидетеля",
+      "remove": "Удалить",
+      "currency": "Валюта",
+      "totalAmount": "Общая сумма долга",
+      "monthlyAmount": "Ежемесячный платеж",
+      "description": "Описание / Цель",
+      "monthsToRepay": "{{count}} месяцев на погашение",
+      "lastPayment": "Последний платеж: {{amount}}",
+      "submit": "Создать договор",
+      "language": "Язык",
+      "contractCreated": "Договор успешно создан!",
+      "dashboardTitle": "Добро пожаловать в NomachiBot",
+      "dashboardSubtitle": "Создавайте, подписывайте и публично отслеживайте беспроцентные P2P долговые соглашения прямо в Telegram.",
+      "dashboardHint": "Нажмите кнопку выше, чтобы создать первое долговое соглашение. Вы сможете пригласить кредитора и свидетелей через Telegram.",
+      "loading": "Загрузка...",
+      "back": "Назад",
+      "invalidLink": "Недействительная ссылка приглашения",
+      "goHome": "На главную",
+      "confirmAs": "Подтвердить как",
+      "contractSummary": "Сводка договора",
+      "borrower": "Заёмщик",
+      "duration": "Срок",
+      "startDate": "Дата начала",
+      "repaymentSchedule": "График платежей",
+      "dueDate": "Дата платежа",
+      "amount": "Сумма",
+      "balance": "Остаток",
+      "moreMonths": "ещё месяцев",
+      "participants": "Участники",
+      "confirmed": "Подтверждено",
+      "pending": "Ожидает",
+      "yourDetails": "Ваши данные",
+      "confirmDetailsHint": "Проверьте и при необходимости обновите ваши данные перед подтверждением.",
+      "legalDisclaimer": "Этот документ является официальной записью взаимного намерения сторон. Он не является нотариально заверенным документом. Для юридического исполнения обратитесь к квалифицированному юристу.",
+      "confirming": "Подтверждение...",
+      "confirmAndSign": "Подтвердить и подписать",
+      "confirmAsWitness": "Подтверждаю как свидетель",
+      "confirmSuccess": "Подтверждено!",
+      "confirmSuccessHint": "Ваше участие зафиксировано в договоре.",
+      "contractId": "ID договора",
+      "viewPublicPage": "Открыть публичную страницу статуса",
+      "confirmMandatoryFields": "Имя и фамилия обязательны.",
+      "confirmError": "Не удалось подтвердить. Пожалуйста, попробуйте снова."
+    }
+  }
+};
+
+i18n
+  .use(initReactI18next)
+  .init({
+    resources,
+    lng: localStorage.getItem('appLang') || 'en',
+    fallbackLng: 'en',
+    interpolation: {
+      escapeValue: false
+    }
+  });
+
+export default i18n;
