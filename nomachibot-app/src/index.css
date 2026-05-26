@@ -1,6 +1,14 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-tg-bg: var(--tg-theme-bg-color);
+  --color-tg-text: var(--tg-theme-text-color);
+  --color-tg-hint: var(--tg-theme-hint-color);
+  --color-tg-link: var(--tg-theme-link-color);
+  --color-tg-button: var(--tg-theme-button-color);
+  --color-tg-buttonText: var(--tg-theme-button-text-color);
+  --color-tg-secondaryBg: var(--tg-theme-secondary-bg-color);
+}
 
 @layer base {
   body {
