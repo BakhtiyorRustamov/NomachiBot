@@ -28,7 +28,40 @@ const resources = {
       "lastPayment": "Last payment: {{amount}}",
       "submit": "Create Contract",
       "language": "Language",
-      "contractCreated": "Contract created successfully!"
+      "contractCreated": "Contract created successfully!",
+      "dashboardTitle": "Welcome to NomachiBot",
+      "dashboardSubtitle": "Create, countersign, and publicly track zero-interest P2P debt agreements entirely inside Telegram.",
+      "dashboardHint": "Tap the button above to create your first debt agreement. You'll be able to invite the lender and witnesses via Telegram.",
+      // ── Phase 4: Confirmation flow ──
+      "loading": "Loading...",
+      "back": "Back",
+      "invalidLink": "Invalid Invite Link",
+      "goHome": "Go to Dashboard",
+      "confirmAs": "Confirm as",
+      "contractSummary": "Contract Summary",
+      "borrower": "Borrower",
+      "duration": "Duration",
+      "startDate": "Start Date",
+      "repaymentSchedule": "Repayment Schedule",
+      "dueDate": "Due Date",
+      "amount": "Amount",
+      "balance": "Balance",
+      "moreMonths": "more months",
+      "participants": "Participants",
+      "confirmed": "Confirmed",
+      "pending": "Pending",
+      "yourDetails": "Your Details",
+      "confirmDetailsHint": "Review and update your information below before confirming.",
+      "legalDisclaimer": "This document is a formal record of mutual intent. It does not constitute a notarized legal instrument. Consult a qualified lawyer for legal enforcement.",
+      "confirming": "Confirming…",
+      "confirmAndSign": "Confirm & Sign",
+      "confirmAsWitness": "I Confirm as Witness",
+      "confirmSuccess": "Confirmed!",
+      "confirmSuccessHint": "Your participation has been recorded on the contract.",
+      "contractId": "Contract ID",
+      "viewPublicPage": "View Public Status Page",
+      "confirmMandatoryFields": "First name and last name are required.",
+      "confirmError": "Confirmation failed. Please try again."
     }
   },
   uz: {
@@ -57,49 +90,27 @@ const resources = {
       "lastPayment": "Oxirgi to'lov: {{amount}}",
       "submit": "Shartnoma yaratish",
       "language": "Til",
-      "contractCreated": "Shartnoma muvaffaqiyatli yaratildi!"
-    }
-  },
-  ru: {
-    translation: {
-      "photoWarning": "Внимание: Это фото будет видно всем, кто отсканирует QR-код.",
-      "takeSelfie": "Сделать селфи",
-      "retakePhoto": "Удалить / Переснять",
-      "createContract": "Создать договор",
-      "myDetails": "Мои данные (Заемщик)",
-      "lenderDetails": "Данные кредитора",
-      "witnesses": "Свидетели (Необязательно)",
-      "debtTerms": "Условия долга",
-      "firstName": "Имя",
-      "lastName": "Фамилия",
-      "patronymic": "Отчество",
-      "phone": "Номер телефона",
-      "address": "Адрес",
-      "username": "Имя пользователя Telegram",
-      "addWitness": "Добавить свидетеля",
-      "remove": "Удалить",
-      "currency": "Валюта",
-      "totalAmount": "Общая сумма долга",
-      "monthlyAmount": "Ежемесячный платеж",
-      "description": "Описание / Цель",
-      "monthsToRepay": "{{count}} месяцев на погашение",
-      "lastPayment": "Последний платеж: {{amount}}",
-      "submit": "Создать договор",
-      "language": "Язык",
-      "contractCreated": "Договор успешно создан!"
-    }
-  }
-};
-
-i18n
-  .use(initReactI18next)
-  .init({
-    resources,
-    lng: localStorage.getItem('appLang') || 'en', // Default language
-    fallbackLng: 'en',
-    interpolation: {
-      escapeValue: false 
-    }
-  });
-
-export default i18n;
+      "contractCreated": "Shartnoma muvaffaqiyatli yaratildi!",
+      "dashboardTitle": "NomachiBot ga xush kelibsiz",
+      "dashboardSubtitle": "Telegram ichida foizsiz P2P qarz shartnomalarini yarating, tasdiqlang va ochiq kuzating.",
+      "dashboardHint": "Birinchi qarz shartnomangizni yaratish uchun yuqoridagi tugmani bosing. Siz qarz beruvchi va guvohlarni Telegram orqali taklif qila olasiz.",
+      // ── Phase 4: Confirmation flow ──
+      "loading": "Yuklanmoqda...",
+      "back": "Orqaga",
+      "invalidLink": "Yaroqsiz taklif havolasi",
+      "goHome": "Bosh sahifaga",
+      "confirmAs": "sifatida tasdiqlash",
+      "contractSummary": "Shartnoma xulosasi",
+      "borrower": "Qarz oluvchi",
+      "duration": "Muddat",
+      "startDate": "Boshlanish sanasi",
+      "repaymentSchedule": "To'lov jadvali",
+      "dueDate": "To'lov sanasi",
+      "amount": "Miqdor",
+      "balance": "Qoldiq",
+      "moreMonths": "oy ko'proq",
+      "participants": "Ishtirokchilar",
+      "confirmed": "Tasdiqlangan",
+      "pending": "Kutilmoqda",
+      "yourDetails": "Sizning ma'lumotlaringiz",
+      "confirmDetailsHint": "Tasdiqlashdan oldin quyidagi ma'lumotlaringizni

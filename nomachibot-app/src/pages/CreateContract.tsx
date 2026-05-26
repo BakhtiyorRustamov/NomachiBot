@@ -4,6 +4,7 @@ import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { PhotoCapture } from '../components/PhotoCapture';
+import axios from 'axios';
 import toast from 'react-hot-toast';
 
 interface InviteToken {
@@ -29,7 +30,7 @@ export const CreateContract: React.FC = () => {
     address: '',
     username: 'johndoe'
   });
-  const [, setBorrowerPhoto] = useState<File | null>(null);
+  const [borrowerPhoto, setBorrowerPhoto] = useState<File | null>(null);
 
   // Lender details
   const [lender, setLender] = useState({
@@ -111,41 +112,31 @@ export const CreateContract: React.FC = () => {
 
     toast.loading('Creating contract...');
     try {
-      // Mocking the API response for local dev since backend DB isn't running
-      const mockTokens = [
-        { role: 'lender', link: `https://t.me/nomachibot/app?startapp=mockuuid_lender_token123` },
-        ...witnesses.map((_, i) => ({ role: `witness${i + 1}`, link: `https://t.me/nomachibot/app?startapp=mockuuid_witness${i+1}_token456` }))
-      ];
-      
-      setTimeout(() => {
-        toast.dismiss();
-        toast.success(t('contractCreated'));
-        setCreatedUuid('mock-uuid-1234');
-        setCreatedTokens(mockTokens);
-      }, 1000);
+      const token = localStorage.getItem('token');
+      const headers = { Authorization: `Bearer ${token}` };
 
-      /* Real API Code:
       const res = await axios.post('/api/contracts', {
         totalAmount, monthlyAmount, currency, description, language: i18n.language,
         borrower, lender, witnesses
-      }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
-      
+      }, { headers });
+
       if (borrowerPhoto) {
         const formData = new FormData();
         formData.append('photo', borrowerPhoto);
         formData.append('role', 'borrower');
         await axios.post(`/api/contracts/${res.data.uuid}/photo`, formData, {
-          headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${localStorage.getItem('token')}` }
+          headers: { ...headers, 'Content-Type': 'multipart/form-data' }
         });
       }
+
       toast.dismiss();
       toast.success(t('contractCreated'));
       setCreatedUuid(res.data.uuid);
       setCreatedTokens(res.data.inviteTokens);
-      */
-    } catch (error) {
+    } catch (error: any) {
       toast.dismiss();
-      toast.error('Failed to create contract');
+      const msg = error?.response?.data?.error || 'Failed to create contract';
+      toast.error(msg);
     }
   };
 

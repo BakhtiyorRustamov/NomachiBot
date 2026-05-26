@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="{{lang}}">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 12px; color: #1a1a2e; background: #ffffff; padding: 32px 40px; }
+  h1 { font-size: 22px; font-weight: 700; text-align: center; color: #1a1a2e; margin-bottom: 4px; }
+  h2 { font-size: 14px; font-weight: 700; color: #3390ec; margin: 20px 0 10px; border-bottom: 2px solid #3390ec; padding-bottom: 4px; }
+  .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; border-bottom: 3px solid #3390ec; padding-bottom: 16px; }
+  .header-left { display: flex; flex-direction: column; gap: 2px; }
+  .app-name { font-size: 18px; font-weight: 800; color: #3390ec; letter-spacing: -0.5px; }
+  .app-tagline { font-size: 10px; color: #666; }
+  .header-right { text-align: right; }
+  .contract-id { font-family: monospace; font-size: 9px; color: #888; }
+  .created-date { font-size: 10px; color: #555; margin-top: 2px; }
+  .section { margin-bottom: 18px; }
+  .terms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 24px; }
+  .term-row { display: flex; flex-direction: column; padding: 6px 0; border-bottom: 1px solid #eef0f3; }
+  .term-label { font-size: 10px; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+  .term-value { font-size: 13px; font-weight: 600; color: #1a1a2e; margin-top: 2px; }
+  .term-value.highlight { font-size: 16px; color: #3390ec; }
+  table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  thead tr { background: #3390ec; color: #fff; }
+  thead th { padding: 7px 10px; text-align: left; font-weight: 600; font-size: 10px; text-transform: uppercase; letter-spacing: 0.3px; }
+  tbody tr:nth-child(even) { background: #f8f9fb; }
+  tbody tr:nth-child(odd) { background: #ffffff; }
+  tbody td { padding: 6px 10px; border-bottom: 1px solid #eef0f3; }
+  .participant-block { display: flex; margin-bottom: 14px; border: 1px solid #e8eaf0; border-radius: 8px; overflow: hidden; }
+  .participant-info { flex: 1; padding: 12px 16px; }
+  .participant-photo { width: 110px; min-width: 110px; background: #f0f2f7; display: flex; align-items: center; justify-content: center; padding: 12px; }
+  .participant-photo img { width: 86px; height: 86px; border-radius: 50%; object-fit: cover; border: 3px solid #3390ec; }
+  .participant-photo .placeholder { width: 86px; height: 86px; border-radius: 50%; background: #d8dce8; display: flex; align-items: center; justify-content: center; }
+  .role-badge { display: inline-block; background: #3390ec; color: #fff; font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .participant-name { font-size: 14px; font-weight: 700; color: #1a1a2e; margin-bottom: 4px; }
+  .participant-detail { font-size: 10px; color: #666; margin-bottom: 2px; }
+  .participant-detail span { font-weight: 600; color: #444; }
+  .status-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 9px; font-weight: 700; margin-top: 4px; }
+  .status-confirmed { background: #dcfce7; color: #166534; }
+  .status-pending { background: #fef9c3; color: #854d0e; }
+  .disclaimer { margin-top: 20px; padding: 12px 16px; background: #f8f9fb; border-left: 4px solid #f59e0b; border-radius: 4px; font-size: 10px; color: #666; line-height: 1.5; font-style: italic; }
+  .qr-section { margin-top: 28px; display: flex; flex-direction: column; align-items: center; padding-top: 20px; border-top: 2px dashed #d1d5db; }
+  .qr-img { width: 150px; height: 150px; }
+  .qr-caption { font-size: 10px; color: #888; margin-top: 8px; text-align: center; max-width: 240px; line-height: 1.4; }
+  .amount-paid { color: #166534; font-weight: 700; }
+  .no-payments { font-style: italic; color: #999; padding: 12px; text-align: center; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="app-name">NomachiBot</div>
+    <div class="app-tagline">Debt Agreement / Qarz Shartnomasi / Долговое Соглашение</div>
+  </div>
+  <div class="header-right">
+    <div class="contract-id">{{labels.contractId}}: {{uuid}}</div>
+    <div class="created-date">{{labels.createdOn}}: {{createdOn}}</div>
+  </div>
+</div>
+
+<h1>{{labels.title}}</h1>
+
+<!-- DEBT TERMS -->
+<div class="section">
+  <h2>{{labels.debtTerms}}</h2>
+  <div class="terms-grid">
+    <div class="term-row">
+      <div class="term-label">{{labels.totalAmount}}</div>
+      <div class="term-value highlight">{{totalAmount}} {{currency}}</div>
+    </div>
+    <div class="term-row">
+      <div class="term-label">{{labels.monthlyRepayment}}</div>
+      <div class="term-value">{{monthlyAmount}} {{currency}}</div>
+    </div>
+    <div class="term-row">
+      <div class="term-label">{{labels.duration}}</div>
+      <div class="term-value">{{nMonths}} {{labels.months}}</div>
+    </div>
+    <div class="term-row">
+      <div class="term-label">{{labels.startDate}}</div>
+      <div class="term-value">{{startDate}}</div>
+    </div>
+    {{#if description}}
+    <div class="term-row" style="grid-column: 1 / -1;">
+      <div class="term-label">{{labels.purpose}}</div>
+      <div class="term-value">{{description}}</div>
+    </div>
+    {{/if}}
+  </div>
+</div>
+
+<!-- REPAYMENT SCHEDULE -->
+<div class="section">
+  <h2>{{labels.repaymentSchedule}}</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>{{labels.dueDate}}</th>
+        <th style="text-align:right">{{labels.amount}}</th>
+        <th style="text-align:right">{{labels.balance}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each schedule}}
+      <tr>
+        <td>{{this.month}}</td>
+        <td>{{this.dueDate}}</td>
+        <td style="text-align:right">{{this.amount}} {{../currency}}</td>
+        <td style="text-align:right">{{this.balance}} {{../currency}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>
+
+<!-- PARTICIPANTS -->
+<div class="section">
+  <h2>{{labels.participants}}</h2>
+  {{#each participants}}
+  <div class="participant-block">
+    <div class="participant-info">
+      <div class="role-badge">{{this.roleLabel}}</div>
+      <div class="participant-name">{{this.fullName}}</div>
+      {{#if this.patronymic}}
+      <div class="participant-detail">{{this.patronymic}}</div>
+      {{/if}}
+      {{#if this.telegram_username}}
+      <div class="participant-detail">@{{this.telegram_username}}</div>
+      {{/if}}
+      {{#if this.phone}}
+      <div class="participant-detail"><span>{{../labels.phone}}:</span> {{this.phone}}</div>
+      {{/if}}
+      {{#if this.address}}
+      <div class="participant-detail"><span>{{../labels.address}}:</span> {{this.address}}</div>
+      {{/if}}
+      <div class="status-badge {{#if this.confirmed_at}}status-confirmed{{else}}status-pending{{/if}}">
+        {{#if this.confirmed_at}}{{../labels.confirmed}}: {{this.confirmed_at}}{{else}}{{../labels.pending}}{{/if}}
+      </div>
+    </div>
+    <div class="participant-photo">
+      {{#if this.photoDataUrl}}
+      <img src="{{this.photoDataUrl}}" alt="photo" />
+      {{else}}
+      <div class="placeholder">
+        <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="30" cy="22" r="12" fill="#b0b8cc"/>
+          <ellipse cx="30" cy="50" rx="20" ry="12" fill="#b0b8cc"/>
+        </svg>
+      </div>
+      {{/if}}
+    </div>
+  </div>
+  {{/each}}
+</div>
+
+<!-- PAYMENT HISTORY -->
+<div class="section">
+  <h2>{{labels.paymentHistory}}</h2>
+  {{#if payments.length}}
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>{{labels.date}}</th>
+        <th style="text-align:right">{{labels.amount}}</th>
+        <th>{{labels.note}}</th>
+        <th style="text-align:right">{{labels.runningBalance}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each payments}}
+      <tr>
+        <td>{{this.index}}</td>
+        <td>{{this.payment_date}}</td>
+        <td style="text-align:right" class="amount-paid">{{this.amount}} {{../currency}}</td>
+        <td>{{this.note}}</td>
+        <td style="text-align:right">{{this.running_balance}} {{../currency}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  {{else}}
+  <div class="no-payments">{{labels.noPayments}}</div>
+  {{/if}}
+</div>
+
+<!-- DISCLAIMER -->
+<div class="disclaimer">{{labels.disclaimer}}</div>
+
+<!-- QR CODE -->
+<div class="qr-section">
+  <img class="qr-img" src="{{qrDataUrl}}" alt="QR Code" />
+  <div class="qr-caption">{{labels.qrCaption}}</div>
+</div>
+
+</body>
+</html>
