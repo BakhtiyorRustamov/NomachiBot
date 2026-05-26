@@ -1,9 +1,8 @@
 import express, { Response } from 'express';
 import { authenticateJWT, AuthRequest } from '../middleware/auth';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../db';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // Get current user profile (Requires JWT)
 router.get('/me', authenticateJWT, async (req: AuthRequest, res: Response) => {

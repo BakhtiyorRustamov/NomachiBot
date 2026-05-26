@@ -1,13 +1,12 @@
 import express, { Response } from 'express';
 import { authenticateJWT, AuthRequest } from '../middleware/auth';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../db';
 import crypto from 'crypto';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // Configure multer for selfie uploads (temporarily in memory, then processed)
 const upload = multer({ 
