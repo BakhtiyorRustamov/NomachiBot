@@ -6,7 +6,7 @@ import { Telegraf, Markup } from 'telegraf';
 
 const PORT = process.env.PORT || 3001;
 const BOT_TOKEN = process.env.BOT_TOKEN;
-const MINI_APP_URL = process.env.MINI_APP_URL || 'https://t.me/nomachibot/app';
+const MINI_APP_URL = process.env.MINI_APP_URL || '';
 
 if (!BOT_TOKEN) {
   console.error('Missing BOT_TOKEN in environment variables.');
@@ -37,11 +37,26 @@ app.get('/health', (_req: Request, res: Response) => {
 
 const bot = new Telegraf(BOT_TOKEN);
 
-bot.start((ctx) => {
-  ctx.reply(
-    'Welcome to NomachiBot!\n\nCreate, countersign, and publicly track zero-interest P2P debt agreements entirely inside Telegram.\n\nTap the button below to launch the Mini App.',
-    Markup.inlineKeyboard([Markup.button.webApp('Launch NomachiBot', MINI_APP_URL)]),
-  );
+bot.start(async (ctx) => {
+  try {
+    if (MINI_APP_URL) {
+      await ctx.reply(
+        'Welcome to NomachiBot!\n\nCreate, countersign, and publicly track zero-interest P2P debt agreements entirely inside Telegram.\n\nTap the button below to launch the Mini App.',
+        Markup.inlineKeyboard([Markup.button.webApp('Launch NomachiBot', MINI_APP_URL)]),
+      );
+    } else {
+      // MINI_APP_URL not configured — send a plain text reply so the bot doesn't crash
+      await ctx.reply(
+        'Welcome to NomachiBot!\n\nCreate, countersign, and publicly track zero-interest P2P debt agreements entirely inside Telegram.\n\n(Mini App URL not configured yet.)',
+      );
+    }
+  } catch (err) {
+    console.error('bot.start reply error:', err);
+    // Swallow the error — don't let a single /start message crash the server
+    try {
+      await ctx.reply('Welcome to NomachiBot! The app link is being configured — please try again shortly.');
+    } catch { /* ignore */ }
+  }
 });
 
 app.listen(PORT, () => {
