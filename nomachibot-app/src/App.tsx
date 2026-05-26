@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
-import { initMiniApp, initUtils, initInitData } from '@telegram-apps/sdk';
+import { init, retrieveLaunchParams } from '@telegram-apps/sdk';
 import { Toaster } from 'react-hot-toast';
-import axios from 'axios';
 
 import { CreateContract } from './pages/CreateContract';
 
@@ -18,12 +17,16 @@ const AppContent = () => {
 
   useEffect(() => {
     try {
-      // Initialize Telegram Mini App SDK
-      const [miniApp] = initMiniApp();
-      miniApp.ready();
+      // Initialize Telegram Mini App SDK v3
+      init();
       
-      const utils = initUtils();
-      const initData = initInitData();
+      let initData: any = null;
+      try {
+        const params = retrieveLaunchParams();
+        initData = params.initData;
+      } catch (e) {
+        console.log("Not in Telegram environment");
+      }
 
       // Check for startParam (Invite Link)
       const startParam = initData?.startParam;
@@ -36,17 +39,7 @@ const AppContent = () => {
         }
       }
 
-      // Perform Authentication against our backend
-      if (initData) {
-        const initDataRaw = initData.raw;
-        // In a real scenario, we'd send initDataRaw to our API
-        // axios.post('http://localhost:3001/api/auth/telegram', { initData: initDataRaw })
-        //   .then(res => { localStorage.setItem('token', res.data.token); setIsReady(true); })
-        //   .catch(err => setError('Authentication failed'));
-        setIsReady(true); // Mock success for now
-      } else {
-        setError('Please open this app inside Telegram');
-      }
+      setIsReady(true);
 
     } catch (e: any) {
       console.error(e);

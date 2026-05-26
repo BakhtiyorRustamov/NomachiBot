@@ -4,7 +4,6 @@ import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { PhotoCapture } from '../components/PhotoCapture';
-import axios from 'axios';
 import toast from 'react-hot-toast';
 
 interface InviteToken {
@@ -30,7 +29,7 @@ export const CreateContract: React.FC = () => {
     address: '',
     username: 'johndoe'
   });
-  const [borrowerPhoto, setBorrowerPhoto] = useState<File | null>(null);
+  const [, setBorrowerPhoto] = useState<File | null>(null);
 
   // Lender details
   const [lender, setLender] = useState({
