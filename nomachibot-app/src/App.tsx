@@ -79,34 +79,35 @@ const AppContent = () => {
   useEffect(() => {
     const authenticate = async () => {
       try {
-        // Initialize Telegram Mini App SDK v3
-        init();
-
-        let initData: any = null;
+        // ── Step 1: window.Telegram.WebApp (works on all Telegram clients)
+        const tgWebApp = (window as any).Telegram?.WebApp;
         let initDataRaw: string | undefined;
+        let startParam: string | undefined;
 
-        // Try the @telegram-apps/sdk first; fall back to window.Telegram.WebApp
-        try {
-          const params = retrieveLaunchParams();
-          initData = params.initData;
-          initDataRaw = params.initDataRaw as string | undefined;
-        } catch (e) {
-          console.log('SDK retrieveLaunchParams failed, trying window.Telegram.WebApp');
+        if (tgWebApp) {
+          tgWebApp.ready();   // tell Telegram the app has loaded
+          tgWebApp.expand();  // expand to full height
+          // initData can be "" in some edge cases — treat that as missing
+          initDataRaw = tgWebApp.initData || undefined;
+          startParam = tgWebApp.initDataUnsafe?.start_param;
         }
 
-        // Fallback: Telegram Desktop / older clients expose initData on window directly
+        // ── Step 2: @telegram-apps/sdk fallback (newer clients / web)
         if (!initDataRaw) {
-          const tgWebApp = (window as any).Telegram?.WebApp;
-          if (tgWebApp?.initData) {
-            initDataRaw = tgWebApp.initData as string;
-            // Parse startParam from initData string manually
-            const raw = new URLSearchParams(initDataRaw);
-            try { initData = { startParam: raw.get('start_param') ?? undefined }; } catch {}
+          try {
+            init();
+            const params = retrieveLaunchParams();
+            initDataRaw = (params.initDataRaw as string | undefined) || undefined;
+            if (!startParam) {
+              const sdkData = params.initData as any;
+              startParam = sdkData?.startParam ?? sdkData?.start_param;
+            }
+          } catch (e) {
+            console.log('SDK retrieveLaunchParams also failed:', e);
           }
         }
 
-        // Check for startParam (Invite Link)
-        const startParam = initData?.startParam ?? (initData as any)?.start_param;
+        // ── Step 3: handle invite-link navigation
         if (startParam) {
           const parts = String(startParam).split('_');
           if (parts.length === 3) {
@@ -115,7 +116,7 @@ const AppContent = () => {
           }
         }
 
-        // Authenticate against the live backend
+        // ── Step 4: authenticate or restore session
         if (initDataRaw) {
           try {
             const res = await axios.post('/api/auth/telegram', { initData: initDataRaw });
@@ -123,7 +124,6 @@ const AppContent = () => {
             setIsReady(true);
           } catch (authErr) {
             console.error('Auth failed:', authErr);
-            // If auth fails, still show UI (token might already be stored)
             if (localStorage.getItem('token')) {
               setIsReady(true);
             } else {
@@ -131,8 +131,10 @@ const AppContent = () => {
             }
           }
         } else if (localStorage.getItem('token')) {
-          // Already have a token from a previous session
           setIsReady(true);
+        } else if (tgWebApp !== undefined) {
+          // We ARE inside Telegram but initData is empty — unusual production edge case
+          setError('No auth data received from Telegram. Please close and reopen the app.');
         } else {
           setError('Please open this app inside Telegram.');
         }
