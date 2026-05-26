@@ -84,18 +84,31 @@ const AppContent = () => {
 
         let initData: any = null;
         let initDataRaw: string | undefined;
+
+        // Try the @telegram-apps/sdk first; fall back to window.Telegram.WebApp
         try {
           const params = retrieveLaunchParams();
           initData = params.initData;
           initDataRaw = params.initDataRaw as string | undefined;
         } catch (e) {
-          console.log('Not in Telegram environment');
+          console.log('SDK retrieveLaunchParams failed, trying window.Telegram.WebApp');
+        }
+
+        // Fallback: Telegram Desktop / older clients expose initData on window directly
+        if (!initDataRaw) {
+          const tgWebApp = (window as any).Telegram?.WebApp;
+          if (tgWebApp?.initData) {
+            initDataRaw = tgWebApp.initData as string;
+            // Parse startParam from initData string manually
+            const raw = new URLSearchParams(initDataRaw);
+            try { initData = { startParam: raw.get('start_param') ?? undefined }; } catch {}
+          }
         }
 
         // Check for startParam (Invite Link)
-        const startParam = initData?.startParam;
+        const startParam = initData?.startParam ?? (initData as any)?.start_param;
         if (startParam) {
-          const parts = startParam.split('_');
+          const parts = String(startParam).split('_');
           if (parts.length === 3) {
             const [uuid, role, token] = parts;
             navigate(`/confirm/${uuid}/${role}/${token}`);
