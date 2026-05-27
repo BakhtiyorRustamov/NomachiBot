@@ -36,6 +36,7 @@ app.get('/health', (_req: Request, res: Response) => {
 });
 
 const bot = new Telegraf(BOT_TOKEN);
+export { bot };
 
 bot.start(async (ctx) => {
   try {

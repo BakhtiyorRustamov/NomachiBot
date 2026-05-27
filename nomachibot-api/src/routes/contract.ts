@@ -9,6 +9,16 @@ import fs from 'fs';
 
 const router = express.Router();
 
+// Import bot lazily to avoid circular dependency at startup
+let _bot: import('telegraf').Telegraf | null = null;
+async function getBot() {
+  if (!_bot) {
+    const mod = await import('../index');
+    _bot = mod.bot;
+  }
+  return _bot;
+}
+
 const upload = multer({ limits: { fileSize: 5 * 1024 * 1024 } });
 
 const generateInviteToken = () => crypto.randomBytes(32).toString('hex');
@@ -466,11 +476,30 @@ router.post('/:uuid/payments', authenticateJWT, async (req: AuthRequest, res: Re
       },
     });
 
-    if (runningBalance <= 0) {
+    const settled = runningBalance <= 0;
+    if (settled) {
       await prisma.contract.update({ where: { uuid }, data: { status: 'settled' } });
     }
 
-    res.json({ payment, runningBalance, settled: runningBalance <= 0 });
+    // Notify borrower via Telegram bot
+    try {
+      const borrowerUser = await prisma.user.findUnique({
+        where: { id: contract.borrower_user_id },
+        select: { telegram_id: true },
+      });
+      if (borrowerUser?.telegram_id) {
+        const tgBot = await getBot();
+        const msg = settled
+          ? `✅ *Contract settled!*\n\nAll payments for contract \`${uuid.slice(0, 8)}\` have been received. The contract is now closed.`
+          : `💰 *Payment received*\n\nAmount: *${Number(amount).toLocaleString()} ${contract.currency}*\nRemaining balance: *${Math.max(0, runningBalance).toLocaleString()} ${contract.currency}*\n\nContract: \`${uuid.slice(0, 8)}\``;
+        await tgBot.telegram.sendMessage(Number(borrowerUser.telegram_id), msg, { parse_mode: 'Markdown' });
+      }
+    } catch (notifyErr) {
+      console.warn('Failed to send payment notification:', notifyErr);
+      // Non-fatal — payment is already saved
+    }
+
+    res.json({ payment, runningBalance, settled });
   } catch (error) {
     console.error('Error logging payment:', error);
     res.status(500).json({ error: 'Internal server error' });

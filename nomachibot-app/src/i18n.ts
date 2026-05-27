@@ -71,7 +71,10 @@ const resources = {
       "noWitnesses": "No witnesses on this contract",
       "months": "months",
       "witness": "Witness",
-      "lender": "Lender"
+      "lender": "Lender",
+      "logPayment": "Log Payment Received",
+      "paymentDate": "Payment Date",
+      "note": "Note (optional)"
     }
   },
   uz: {
@@ -143,7 +146,10 @@ const resources = {
       "noWitnesses": "Shartnomada guvohlar yo'q",
       "months": "oy",
       "witness": "Guvoh",
-      "lender": "Qarz beruvchi"
+      "lender": "Qarz beruvchi",
+      "logPayment": "To'lovni qayd etish",
+      "paymentDate": "To'lov sanasi",
+      "note": "Izoh (ixtiyoriy)"
     }
   },
   ru: {
@@ -215,7 +221,10 @@ const resources = {
       "noWitnesses": "Свидетелей нет",
       "months": "месяцев",
       "witness": "Свидетель",
-      "lender": "Кредитор"
+      "lender": "Кредитор",
+      "logPayment": "Зафиксировать платёж",
+      "paymentDate": "Дата платежа",
+      "note": "Примечание (необязательно)"
     }
   }
 };
