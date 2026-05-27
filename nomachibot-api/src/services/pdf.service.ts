@@ -113,8 +113,8 @@ export async function generateContractPdf(uuid: string): Promise<string> {
       doc.moveDown(0.4);
 
       const fields: [string, string][] = [
-        ['Total Amount', `${fmtMoney(contract.total_amount)} ${contract.currency}`],
-        ['Monthly Payment', `${fmtMoney(contract.monthly_amount)} ${contract.currency}`],
+        ['Total Amount', `${fmtMoney(Number(contract.total_amount))} ${contract.currency}`],
+        ['Monthly Payment', `${fmtMoney(Number(contract.monthly_amount))} ${contract.currency}`],
         ['Duration', `${contract.n_months} month${contract.n_months !== 1 ? 's' : ''}`],
         ['Start Date', fmtDate(contract.start_date)],
         ['Status', String(contract.status).toUpperCase()],
