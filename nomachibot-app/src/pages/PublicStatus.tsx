@@ -79,11 +79,7 @@ function buildSchedule(data: ContractData): ScheduleRow[] {
   return rows;
 }
 
-function roleName(role: string, t: (k: string, fb?: string) => string) {
-  if (role === 'borrower') return t('borrower', 'Borrower');
-  if (role === 'lender') return t('lender', 'Lender');
-  return `${t('witness', 'Witness')} ${role.replace('witness', '')}`;
-}
+
 
 function statusBadge(status: string) {
   if (status === 'active') return { bg: 'bg-green-500/15', text: 'text-green-400', label: 'Active' };
@@ -93,6 +89,11 @@ function statusBadge(status: string) {
 
 export const PublicStatus = () => {
   const { uuid } = useParams<{ uuid: string }>();
+  const getRoleName = (role: string) => {
+    if (role === 'borrower') return t('borrower', 'Borrower');
+    if (role === 'lender') return t('lender', 'Lender');
+    return `${t('witness', 'Witness')} ${role.replace('witness', '')}`;
+  };
   const { t, i18n } = useTranslation();
   const [data, setData] = useState<ContractData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -234,7 +235,7 @@ export const PublicStatus = () => {
                     : <span className="text-xl">👤</span>}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs text-gray-500">{roleName(p.role, t)}</p>
+                  <p className="text-xs text-gray-500">{getRoleName(p.role)}</p>
                   <p className="font-medium text-white text-sm truncate">
                     {[p.first_name, p.last_name].filter(Boolean).join(' ') || '—'}
                   </p>
