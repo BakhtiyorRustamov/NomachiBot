@@ -98,7 +98,7 @@ router.post('/', authenticateJWT, async (req: AuthRequest, res: Response) => {
       .filter(p => p.role !== 'borrower')
       .map(p => ({
         role: p.role,
-        link: `${process.env.MINI_APP_URL}?startapp=${contract.uuid}_${p.role}_${p.invite_token}`,
+        link: `${process.env.FRONTEND_URL || process.env.MINI_APP_URL}/confirm/${contract.uuid}/${p.role}/${p.invite_token}`,
       }));
 
     res.json({ uuid: contract.uuid, inviteTokens });
