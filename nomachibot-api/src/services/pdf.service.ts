@@ -1,4 +1,5 @@
-import puppeteer from 'puppeteer';
+import chromium from '@sparticuz/chromium';
+import puppeteer from 'puppeteer-core';
 import Handlebars from 'handlebars';
 import QRCode from 'qrcode';
 import fs from 'fs';
@@ -187,9 +188,19 @@ export async function generateContractPdf(uuid: string): Promise<string> {
 
     const pdfPath = path.join(dir, 'agreement.pdf');
 
+    const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH
+      || await chromium.executablePath();
+
     const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+      args: [
+        ...chromium.args,
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+      ],
+      executablePath,
+      headless: chromium.headless,
     });
 
     try {
@@ -199,20 +210,4 @@ export async function generateContractPdf(uuid: string): Promise<string> {
         path: pdfPath,
         format: 'A4',
         printBackground: true,
-        margin: { top: '0', right: '0', bottom: '0', left: '0' },
-      });
-    } finally {
-      await browser.close();
-    }
-
-    // 8. Save pdf_path to contracts table
-    await prisma.contract.update({
-      where: { uuid },
-      data: { pdf_path: pdfPath },
-    });
-
-    return pdfPath;
-  } finally {
-    releaseSemaphore();
-  }
-}
+        margin: { top: '0', right: '0', bottom: '0', left: '0
