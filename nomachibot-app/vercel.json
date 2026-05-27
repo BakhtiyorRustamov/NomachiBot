@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/status/:uuid", "destination": "/public-status.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
