@@ -56,11 +56,21 @@ export const CreateContract: React.FC = () => {
   const [createdUuid, setCreatedUuid] = useState<string | null>(null);
 
   // Real-time calculator
+  const MAX_MONTHS = 120;
+
   const months = useMemo(() => {
     if (typeof totalAmount === 'number' && typeof monthlyAmount === 'number' && monthlyAmount > 0) {
-      return Math.ceil(totalAmount / monthlyAmount);
+      const raw = Math.ceil(totalAmount / monthlyAmount);
+      return Math.min(raw, MAX_MONTHS);
     }
     return null;
+  }, [totalAmount, monthlyAmount]);
+
+  const monthsExceedsCap = useMemo(() => {
+    if (typeof totalAmount === 'number' && typeof monthlyAmount === 'number' && monthlyAmount > 0) {
+      return Math.ceil(totalAmount / monthlyAmount) > MAX_MONTHS;
+    }
+    return false;
   }, [totalAmount, monthlyAmount]);
 
   const lastPayment = useMemo(() => {
@@ -107,6 +117,10 @@ export const CreateContract: React.FC = () => {
     }
     if (!totalAmount || !monthlyAmount || totalAmount <= 0 || monthlyAmount <= 0) {
       toast.error('Invalid debt amounts');
+      return;
+    }
+    if (Math.ceil(Number(totalAmount) / Number(monthlyAmount)) > 120) {
+      toast.error('Monthly payment is too low — maximum 120 months. Please increase the monthly amount.');
       return;
     }
 
@@ -258,7 +272,12 @@ export const CreateContract: React.FC = () => {
             type="number" 
             min="1"
             value={totalAmount} 
-            onChange={e => setTotalAmount(e.target.value ? Number(e.target.value) : '')} 
+            onChange={e => {
+              const val = e.target.value ? Number(e.target.value) : '';
+              setTotalAmount(val);
+              // Auto-fill monthly with total (1-month default) if monthly is empty
+              if (val && !monthlyAmount) setMonthlyAmount(val);
+            }} 
             required 
           />
           <Input 
@@ -269,6 +288,11 @@ export const CreateContract: React.FC = () => {
             onChange={e => setMonthlyAmount(e.target.value ? Number(e.target.value) : '')} 
             required 
           />
+          {monthsExceedsCap && (
+            <p className="text-xs text-red-400 mt-1">
+              Monthly payment is too low — maximum 120 months allowed. Please increase the monthly amount.
+            </p>
+          )}
           
           {/* Real-time Calculator Output */}
           <div className="mt-4 p-4 rounded-xl bg-tg-link/10 border border-tg-link/20 text-center">
@@ -310,13 +334,20 @@ export const CreateContract: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {schedulePreview.map(row => (
+                    {schedulePreview.slice(0, 12).map(row => (
                       <tr key={row.month} className="border-b border-tg-secondaryBg/50">
                         <td className="py-2">{row.month}</td>
                         <td className="py-2 text-right">{row.amount} {currency}</td>
                         <td className="py-2 text-right">{Math.max(0, row.balance)} {currency}</td>
                       </tr>
                     ))}
+                    {schedulePreview.length > 12 && (
+                      <tr>
+                        <td colSpan={3} className="py-2 text-center text-tg-hint text-xs">
+                          … {schedulePreview.length - 12} {t('moreMonths', 'more months')}
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>

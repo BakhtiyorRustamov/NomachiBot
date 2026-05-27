@@ -175,7 +175,7 @@ const AppContent = () => {
         <Route path="/" element={<Dashboard />} />
         <Route path="/create" element={<CreateContract />} />
         <Route path="/contract/:uuid" element={<ContractDetail />} />
-        <Route path="/confirm/:uuid/:role/:token" element={<ConfirmContract />} />
+        {/* /confirm handled at root level — no auth needed, invite token validates */}
       </Routes>
     </div>
   );
@@ -186,9 +186,10 @@ const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public status page — no Telegram auth, opens in any browser */}
+        {/* No Telegram auth needed — validated by invite token */}
         <Route path="/status/:uuid" element={<PublicStatus />} />
-        {/* All other routes require Telegram auth */}
+        <Route path="/confirm/:uuid/:role/:token" element={<ConfirmContract />} />
+        {/* Everything else requires Telegram auth */}
         <Route path="/*" element={<AppContent />} />
       </Routes>
     </BrowserRouter>
