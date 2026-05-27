@@ -210,4 +210,20 @@ export async function generateContractPdf(uuid: string): Promise<string> {
         path: pdfPath,
         format: 'A4',
         printBackground: true,
-        margin: { top: '0', right: '0', bottom: '0', left: '0
+        margin: { top: '0', right: '0', bottom: '0', left: '0' },
+      });
+    } finally {
+      await browser.close();
+    }
+
+    // 8. Save pdf_path to contracts table
+    await prisma.contract.update({
+      where: { uuid },
+      data: { pdf_path: pdfPath },
+    });
+
+    return pdfPath;
+  } finally {
+    releaseSemaphore();
+  }
+}
