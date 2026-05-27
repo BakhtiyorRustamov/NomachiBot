@@ -1,6 +1,6 @@
 import { generateContractPdf } from '../services/pdf.service';
 import express, { Request, Response } from 'express';
-import { authenticateJWT, AuthRequest } from '../middleware/auth';
+import { authenticateJWT, optionalAuthenticateJWT, AuthRequest } from '../middleware/auth';
 import { prisma } from '../db';
 import crypto from 'crypto';
 import multer from 'multer';
@@ -269,10 +269,10 @@ router.get('/:uuid', authenticateJWT, async (req: AuthRequest, res: Response) =>
 });
 
 // POST /api/contracts/:uuid/lender-confirm - Lender confirms the contract
-router.post('/:uuid/lender-confirm', authenticateJWT, upload.single('photo'), async (req: AuthRequest, res: Response) => {
+router.post('/:uuid/lender-confirm', optionalAuthenticateJWT, upload.single('photo'), async (req: AuthRequest, res: Response) => {
   try {
     const uuid = req.params['uuid'] as string;
-    const userId: string = req.user.id;
+    const userId: string | undefined = req.user?.id;
     const { token, firstName, lastName, patronymic, phone, address } = req.body;
 
     if (!token) {
@@ -313,7 +313,7 @@ router.post('/:uuid/lender-confirm', authenticateJWT, upload.single('photo'), as
         address: address || participant.address,
         photo_path: photoPath || participant.photo_path,
         confirmed_at: new Date(),
-        confirmed_by_user_id: userId,
+        confirmed_by_user_id: userId ?? null,
       },
     });
 
@@ -333,7 +333,7 @@ router.post('/:uuid/lender-confirm', authenticateJWT, upload.single('photo'), as
 });
 
 // POST /api/contracts/:uuid/witness-confirm/:n - Witness n confirms (non-blocking)
-router.post('/:uuid/witness-confirm/:n', authenticateJWT, upload.single('photo'), async (req: AuthRequest, res: Response) => {
+router.post('/:uuid/witness-confirm/:n', optionalAuthenticateJWT, upload.single('photo'), async (req: AuthRequest, res: Response) => {
   try {
     const uuid = req.params['uuid'] as string;
     const n = req.params['n'] as string;
