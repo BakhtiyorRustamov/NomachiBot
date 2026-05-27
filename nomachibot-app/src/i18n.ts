@@ -60,7 +60,18 @@ const resources = {
       "contractId": "Contract ID",
       "viewPublicPage": "View Public Status Page",
       "confirmMandatoryFields": "First name and last name are required.",
-      "confirmError": "Confirmation failed. Please try again."
+      "confirmError": "Confirmation failed. Please try again.",
+      "paid": "Paid",
+      "remaining": "Remaining",
+      "paymentsComplete": "payments complete",
+      "paymentHistory": "Payment History",
+      "logged": "Logged",
+      "downloadPdf": "Download Agreement PDF",
+      "generatingPdf": "Generating PDF...",
+      "noWitnesses": "No witnesses on this contract",
+      "months": "months",
+      "witness": "Witness",
+      "lender": "Lender"
     }
   },
   uz: {
@@ -121,7 +132,18 @@ const resources = {
       "contractId": "Shartnoma ID",
       "viewPublicPage": "Ommaviy holat sahifasini ko'rish",
       "confirmMandatoryFields": "Ism va familiya majburiy.",
-      "confirmError": "Tasdiqlab bo'lmadi. Iltimos, qayta urinib ko'ring."
+      "confirmError": "Tasdiqlab bo'lmadi. Iltimos, qayta urinib ko'ring.",
+      "paid": "To'langan",
+      "remaining": "Qoldiq",
+      "paymentsComplete": "to'lovlar bajarildi",
+      "paymentHistory": "To'lovlar tarixi",
+      "logged": "Qayd etildi",
+      "downloadPdf": "Shartnomani PDF ko'rinishida yuklab olish",
+      "generatingPdf": "PDF yaratilmoqda...",
+      "noWitnesses": "Shartnomada guvohlar yo'q",
+      "months": "oy",
+      "witness": "Guvoh",
+      "lender": "Qarz beruvchi"
     }
   },
   ru: {
@@ -182,7 +204,18 @@ const resources = {
       "contractId": "ID договора",
       "viewPublicPage": "Открыть публичную страницу статуса",
       "confirmMandatoryFields": "Имя и фамилия обязательны.",
-      "confirmError": "Не удалось подтвердить. Пожалуйста, попробуйте снова."
+      "confirmError": "Не удалось подтвердить. Пожалуйста, попробуйте снова.",
+      "paid": "Оплачено",
+      "remaining": "Остаток",
+      "paymentsComplete": "платежей выполнено",
+      "paymentHistory": "История платежей",
+      "logged": "Зафиксировано",
+      "downloadPdf": "Скачать соглашение в PDF",
+      "generatingPdf": "Генерация PDF...",
+      "noWitnesses": "Свидетелей нет",
+      "months": "месяцев",
+      "witness": "Свидетель",
+      "lender": "Кредитор"
     }
   }
 };

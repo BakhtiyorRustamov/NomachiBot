@@ -7,6 +7,7 @@ import axios from 'axios';
 
 import { CreateContract } from './pages/CreateContract';
 import { ConfirmContract } from './pages/ConfirmContract';
+import { PublicStatus } from './pages/PublicStatus';
 
 // ─── Dashboard ───────────────────────────────────────────────
 const Dashboard = () => {
@@ -67,8 +68,8 @@ const Dashboard = () => {
   );
 };
 
-// ─── Placeholder pages (Phase 5+) ──────────────────────────
-const ContractDetail = () => <div className="p-4"><h1 className="text-xl font-bold text-tg-text">Contract Detail</h1><p className="text-tg-hint mt-2">Coming in Phase 5</p></div>;
+// ─── Placeholder pages (Phase 7+) ──────────────────────────
+const ContractDetail = () => <div className="p-4"><h1 className="text-xl font-bold text-tg-text">Contract Detail</h1><p className="text-tg-hint mt-2">Coming in Phase 7</p></div>;
 
 // ─── App Content (auth + routing) ───────────────────────────
 const AppContent = () => {
@@ -184,7 +185,12 @@ const AppContent = () => {
 const App = () => {
   return (
     <BrowserRouter>
-      <AppContent />
+      <Routes>
+        {/* Public status page — no Telegram auth, opens in any browser */}
+        <Route path="/status/:uuid" element={<PublicStatus />} />
+        {/* All other routes require Telegram auth */}
+        <Route path="/*" element={<AppContent />} />
+      </Routes>
     </BrowserRouter>
   );
 };
