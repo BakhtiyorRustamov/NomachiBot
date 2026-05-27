@@ -1,5 +1,4 @@
-import chromium from '@sparticuz/chromium';
-import puppeteer from 'puppeteer-core';
+import puppeteer from 'puppeteer';
 import Handlebars from 'handlebars';
 import QRCode from 'qrcode';
 import fs from 'fs';
@@ -122,10 +121,10 @@ export async function generateContractPdf(uuid: string): Promise<string> {
     if (!contract) throw new Error(`Contract ${uuid} not found`);
 
     const labels = loadLabels(contract.language);
-    const publicBaseUrl = process.env.PUBLIC_BASE_URL ?? 'https://yourdomain.com';
+    const publicBaseUrl = process.env.PUBLIC_BASE_URL ?? process.env.FRONTEND_URL ?? 'https://yourdomain.com';
 
     // 2. QR code as base64 data URL
-    const qrUrl = `${publicBaseUrl}/public/status/${uuid}`;
+    const qrUrl = `${publicBaseUrl}/status/${uuid}`;
     const qrDataUrl = await QRCode.toDataURL(qrUrl, { width: 200, margin: 2 });
 
     // 3. Participant blocks
@@ -188,19 +187,16 @@ export async function generateContractPdf(uuid: string): Promise<string> {
 
     const pdfPath = path.join(dir, 'agreement.pdf');
 
-    const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH
-      || await chromium.executablePath();
-
     const browser = await puppeteer.launch({
+      headless: true,
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || puppeteer.executablePath(),
       args: [
-        ...chromium.args,
         '--no-sandbox',
         '--disable-setuid-sandbox',
         '--disable-dev-shm-usage',
         '--disable-gpu',
+        '--single-process',
       ],
-      executablePath,
-      headless: chromium.headless,
     });
 
     try {
