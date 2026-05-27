@@ -260,7 +260,17 @@ export const ContractDetail = () => {
 
         {/* View public page */}
         <button
-          onClick={() => navigate(`/status/${contract.uuid}`)}
+          onClick={() => {
+            // Open the public status page in the user's external browser,
+            // not inside the Telegram Mini App, so no Telegram auth is needed.
+            const publicUrl = `${window.location.origin}/status/${contract.uuid}`;
+            const tgWebApp = (window as any).Telegram?.WebApp;
+            if (tgWebApp?.openLink) {
+              tgWebApp.openLink(publicUrl);
+            } else {
+              window.open(publicUrl, '_blank');
+            }
+          }}
           className="w-full py-3 rounded-xl text-sm text-tg-link border border-tg-link/30 bg-transparent"
         >
           {t('viewPublicPage')}

@@ -8,6 +8,7 @@ import axios from 'axios';
 import { CreateContract } from './pages/CreateContract';
 import { ContractDetail } from './pages/ContractDetail';
 import { ConfirmContract } from './pages/ConfirmContract';
+import { PublicStatus } from './pages/PublicStatus';
 
 
 // ─── Dashboard ───────────────────────────────────────────────
@@ -237,7 +238,8 @@ const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        {/* /confirm uses invite token auth — no Telegram initData needed */}
+        {/* Public pages — no Telegram auth needed */}
+        <Route path="/status/:uuid" element={<PublicStatus />} />
         <Route path="/confirm/:uuid/:role/:token" element={<ConfirmContract />} />
         {/* Everything else requires Telegram auth */}
         <Route path="/*" element={<AppContent />} />
