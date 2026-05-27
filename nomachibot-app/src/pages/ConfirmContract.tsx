@@ -111,7 +111,7 @@ export const ConfirmContract: React.FC = () => {
 
         if (data.participantData.already_confirmed) {
           setConfirmed(true);
-          setPublicUrl(`${apiBase}/public/status/${uuid}`);
+          setPublicUrl(`${window.location.origin}/status/${uuid}`);
         }
       })
       .catch(err => {
@@ -161,7 +161,7 @@ export const ConfirmContract: React.FC = () => {
         headers: { ...headers, 'Content-Type': 'multipart/form-data' },
       });
 
-      setPublicUrl(res.data.publicUrl || `${apiBase}/public/status/${uuid}`);
+      setPublicUrl(res.data.publicUrl || `${window.location.origin}/status/${uuid}`);
       setConfirmed(true);
       toast.success(t('confirmSuccess', 'Confirmed successfully!'));
     } catch (err: any) {
