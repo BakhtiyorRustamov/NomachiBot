@@ -1,0 +1,45 @@
+# Render Blueprint for the NomachiBot API.
+#
+# After pushing to GitHub, go to https://dashboard.render.com/blueprints,
+# click "New Blueprint Instance", and select this repo. Render reads this
+# file and provisions the web service. Paste your secrets when prompted.
+#
+# Daily database backups are handled by .github/workflows/db-backup.yml
+# (free, runs in GitHub Actions). Render's cron jobs require a paid plan.
+
+services:
+  - type: web
+    name: nomachibot-api
+    runtime: node
+    plan: free
+    rootDir: nomachibot-api
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    disk:
+      # Persistent storage for selfies and generated PDFs. Without a disk,
+      # uploaded photos disappear whenever Render spins the dyno down.
+      name: nomachibot-storage
+      mountPath: /var/data/nomachibot
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: STORAGE_PATH
+        value: /var/data/nomachibot
+      # Secrets — `sync: false` makes Render prompt you for them on first
+      # Blueprint apply rather than reading from this file. Never commit
+      # real values to git.
+      - key: DATABASE_URL
+        sync: false
+      - key: BOT_TOKEN
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: MINI_APP_URL
+        sync: false
+      - key: PUBLIC_BASE_URL
+        sync: false

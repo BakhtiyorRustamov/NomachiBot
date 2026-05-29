@@ -6,6 +6,15 @@ import crypto from 'crypto';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import { validatePhotoUpload, MAX_PHOTO_BYTES } from '../utils/upload';
+
+// Invite tokens expire after 30 days. After that the borrower must
+// regenerate the contract (the lender / witness can no longer confirm).
+const INVITE_TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+
+function isInviteTokenExpired(contractCreatedAt: Date): boolean {
+  return Date.now() - new Date(contractCreatedAt).getTime() > INVITE_TOKEN_TTL_MS;
+}
 
 const router = express.Router();
 
@@ -19,7 +28,7 @@ async function getBot() {
   return _bot;
 }
 
-const upload = multer({ limits: { fileSize: 5 * 1024 * 1024 } });
+const upload = multer({ limits: { fileSize: MAX_PHOTO_BYTES } });
 
 const generateInviteToken = () => crypto.randomBytes(32).toString('hex');
 
@@ -199,6 +208,13 @@ router.get('/:uuid/preview', async (req: Request, res: Response) => {
       return;
     }
 
+    // Reject preview if the invite token is past its 30-day TTL — better to
+    // show the expiry message here than after the lender fills the form.
+    if (!participant.confirmed_at && isInviteTokenExpired(contract.created_at)) {
+      res.status(410).json({ error: 'This invite link has expired (30 days). Ask the borrower to re-issue the contract.' });
+      return;
+    }
+
     const schedule = buildSchedule(
       Number(contract.total_amount),
       Number(contract.monthly_amount),
@@ -282,6 +298,7 @@ router.post('/:uuid/lender-confirm', optionalAuthenticateJWT, upload.single('pho
 
     const participant = await prisma.participant.findFirst({
       where: { contract_uuid: uuid, role: 'lender', invite_token: token as string },
+      include: { contract: { select: { created_at: true } } },
     });
 
     if (!participant) {
@@ -294,13 +311,23 @@ router.post('/:uuid/lender-confirm', optionalAuthenticateJWT, upload.single('pho
       return;
     }
 
+    if (isInviteTokenExpired(participant.contract.created_at)) {
+      res.status(410).json({ error: 'This invite link has expired (30 days). Ask the borrower to re-issue the contract.' });
+      return;
+    }
+
     let photoPath: string | null = null;
     if (req.file) {
+      const check = await validatePhotoUpload(req.file);
+      if (!check.ok) {
+        res.status(check.status).json({ error: check.error });
+        return;
+      }
       const storagePath = process.env.STORAGE_PATH || './storage';
       const dir = path.join(storagePath, 'contracts', uuid, 'photos');
       fs.mkdirSync(dir, { recursive: true });
       photoPath = path.join(dir, 'lender.jpg');
-      fs.writeFileSync(photoPath, req.file.buffer);
+      fs.writeFileSync(photoPath, check.buffer);
     }
 
     await prisma.participant.update({
@@ -324,7 +351,10 @@ router.post('/:uuid/lender-confirm', optionalAuthenticateJWT, upload.single('pho
 
     generateContractPdf(uuid).catch(err => console.error('PDF generation failed:', err));
 
-    const publicUrl = `${process.env.PUBLIC_BASE_URL || ''}/public/status/${uuid}`;
+    // Public status page is the React app on the frontend (Vercel), not the
+    // backend JSON endpoint. Prefer FRONTEND_URL; fall back to PUBLIC_BASE_URL.
+    const frontendBase = process.env.FRONTEND_URL || process.env.PUBLIC_BASE_URL || '';
+    const publicUrl = `${frontendBase}/status/${uuid}`;
     res.json({ success: true, publicUrl });
   } catch (error) {
     console.error('Error confirming lender:', error);
@@ -355,6 +385,7 @@ router.post('/:uuid/witness-confirm/:n', optionalAuthenticateJWT, upload.single(
 
     const participant = await prisma.participant.findFirst({
       where: { contract_uuid: uuid, role, invite_token: token as string },
+      include: { contract: { select: { created_at: true } } },
     });
 
     if (!participant) {
@@ -367,13 +398,23 @@ router.post('/:uuid/witness-confirm/:n', optionalAuthenticateJWT, upload.single(
       return;
     }
 
+    if (isInviteTokenExpired(participant.contract.created_at)) {
+      res.status(410).json({ error: 'This invite link has expired (30 days). Ask the borrower to re-issue the contract.' });
+      return;
+    }
+
     let photoPath: string | null = null;
     if (req.file) {
+      const check = await validatePhotoUpload(req.file);
+      if (!check.ok) {
+        res.status(check.status).json({ error: check.error });
+        return;
+      }
       const storagePath = process.env.STORAGE_PATH || './storage';
       const dir = path.join(storagePath, 'contracts', uuid, 'photos');
       fs.mkdirSync(dir, { recursive: true });
       photoPath = path.join(dir, `${role}.jpg`);
-      fs.writeFileSync(photoPath, req.file.buffer);
+      fs.writeFileSync(photoPath, check.buffer);
     }
 
     await prisma.participant.update({
@@ -393,7 +434,9 @@ router.post('/:uuid/witness-confirm/:n', optionalAuthenticateJWT, upload.single(
     // Witness confirmation does NOT change contract status
     generateContractPdf(uuid).catch(err => console.error('PDF generation failed:', err));
 
-    const publicUrl = `${process.env.PUBLIC_BASE_URL || ''}/public/status/${uuid}`;
+    // Public status page is the React app on the frontend (Vercel).
+    const frontendBase = process.env.FRONTEND_URL || process.env.PUBLIC_BASE_URL || '';
+    const publicUrl = `${frontendBase}/status/${uuid}`;
     res.json({ success: true, publicUrl });
   } catch (error) {
     console.error('Error confirming witness:', error);
@@ -412,12 +455,18 @@ router.post('/:uuid/photo', authenticateJWT, upload.single('photo'), async (req:
       return;
     }
 
+    const check = await validatePhotoUpload(req.file);
+    if (!check.ok) {
+      res.status(check.status).json({ error: check.error });
+      return;
+    }
+
     const storagePath = process.env.STORAGE_PATH || './storage';
     const dir = path.join(storagePath, 'contracts', uuid, 'photos');
     fs.mkdirSync(dir, { recursive: true });
 
     const photoPath = path.join(dir, `${role}.jpg`);
-    fs.writeFileSync(photoPath, req.file.buffer);
+    fs.writeFileSync(photoPath, check.buffer);
 
     await prisma.participant.updateMany({
       where: { contract_uuid: uuid, role },

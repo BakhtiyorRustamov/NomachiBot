@@ -157,11 +157,14 @@ export const ConfirmContract: React.FC = () => {
       if (address) formData.append('address', address);
       if (photo) formData.append('photo', photo);
 
-      const res = await axios.post(endpoint, formData, {
+      await axios.post(endpoint, formData, {
         headers: { ...headers, 'Content-Type': 'multipart/form-data' },
       });
 
-      setPublicUrl(res.data.publicUrl || `${window.location.origin}/status/${uuid}`);
+      // Always use the frontend (Vercel) origin for the public status page.
+      // The backend's `publicUrl` points at the Render API (/public/status/:uuid)
+      // which returns raw JSON, not the React public page.
+      setPublicUrl(`${window.location.origin}/status/${uuid}`);
       setConfirmed(true);
       toast.success(t('confirmSuccess', 'Confirmed successfully!'));
     } catch (err: any) {
@@ -217,10 +220,19 @@ export const ConfirmContract: React.FC = () => {
             </div>
 
             {publicUrl && (
-              <a
-                href={publicUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                type="button"
+                onClick={() => {
+                  // Open in the user's external browser. Inside Telegram Mini App,
+                  // a plain <a target="_blank"> can be intercepted by the in-app
+                  // WebView; openLink() reliably escapes to the system browser.
+                  const tgWebApp = (window as any).Telegram?.WebApp;
+                  if (tgWebApp?.openLink) {
+                    tgWebApp.openLink(publicUrl);
+                  } else {
+                    window.open(publicUrl, '_blank', 'noopener,noreferrer');
+                  }
+                }}
                 className="block w-full py-3 rounded-xl font-semibold text-center mb-3"
                 style={{
                   backgroundColor: 'var(--tg-theme-button-color, #3390ec)',
@@ -228,7 +240,7 @@ export const ConfirmContract: React.FC = () => {
                 }}
               >
                 {t('viewPublicPage', 'View Public Status Page')}
-              </a>
+              </button>
             )}
 
             <Button variant="secondary" fullWidth onClick={() => navigate('/')}>

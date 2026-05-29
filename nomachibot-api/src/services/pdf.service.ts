@@ -71,8 +71,10 @@ export async function generateContractPdf(uuid: string): Promise<string> {
     });
     if (!contract) throw new Error(`Contract ${uuid} not found`);
 
+    // The QR code must point at the React public status page (frontend / Vercel),
+    // NOT the backend API. Prefer FRONTEND_URL; PUBLIC_BASE_URL is the API host on Render.
     const publicBaseUrl =
-      process.env.PUBLIC_BASE_URL || process.env.FRONTEND_URL || 'https://nomachi-bot.vercel.app';
+      process.env.FRONTEND_URL || process.env.PUBLIC_BASE_URL || 'https://nomachi-bot.vercel.app';
 
     // QR code as PNG buffer
     const qrBuffer: Buffer = await QRCode.toBuffer(
